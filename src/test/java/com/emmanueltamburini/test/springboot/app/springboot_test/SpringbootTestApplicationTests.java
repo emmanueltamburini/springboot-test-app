@@ -8,26 +8,22 @@ import com.emmanueltamburini.test.springboot.app.springboot_test.models.Account;
 import com.emmanueltamburini.test.springboot.app.springboot_test.models.Bank;
 import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.AccountRepository;
 import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.BankRepository;
-import com.emmanueltamburini.test.springboot.app.springboot_test.services.AccountService;
 import com.emmanueltamburini.test.springboot.app.springboot_test.services.AccountServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
 @SpringBootTest
 class SpringbootTestApplicationTests {
+	@Mock
 	private AccountRepository accountRepository;
+	@Mock
 	private BankRepository bankRepository;
-	private AccountService accountService;
-
-	@BeforeEach
-	void setUp() {
-		accountRepository = mock(AccountRepository.class);
-		bankRepository = mock(BankRepository.class);
-		accountService = new AccountServiceImpl(accountRepository, bankRepository);
-	}
+	@InjectMocks
+	private AccountServiceImpl accountService;
 
 	@Test
 	void testTransferAccount() {
@@ -90,7 +86,7 @@ class SpringbootTestApplicationTests {
 		verify(bankRepository, times(1)).findById(1L);
 		verify(bankRepository, never()).save(any(Bank.class));
 
-		verify(accountRepository, times(5)).findById(anyLong());
+		verify(accountRepository, times(3)).findById(anyLong());
 		verify(accountRepository, never()).findAll();
 	}
 
