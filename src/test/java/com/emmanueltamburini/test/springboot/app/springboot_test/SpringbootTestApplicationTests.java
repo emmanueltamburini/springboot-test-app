@@ -56,6 +56,9 @@ class SpringbootTestApplicationTests {
 
 		verify(bankRepository, times(2)).findById(1L);
 		verify(bankRepository).save(any(Bank.class));
+
+		verify(accountRepository, times(6)).findById(anyLong());
+		verify(accountRepository, never()).findAll();
 	}
 
 
@@ -86,6 +89,22 @@ class SpringbootTestApplicationTests {
 
 		verify(bankRepository, times(1)).findById(1L);
 		verify(bankRepository, never()).save(any(Bank.class));
+
+		verify(accountRepository, times(5)).findById(anyLong());
+		verify(accountRepository, never()).findAll();
 	}
 
+	@Test
+	void testAssertSameElement() {
+		when(accountRepository.findById(1L)).thenReturn(Data.ACCOUNT_1());
+
+		final Account account1 = accountService.findById(1L);
+		final Account account2 = accountService.findById(1L);
+
+		assertSame(account1, account2);
+		assertEquals("PERSON TEST 1", account1.getPerson());
+		assertEquals("PERSON TEST 1", account2.getPerson());
+
+		verify(accountRepository, times(2)).findById(1L);
+	}
 }
