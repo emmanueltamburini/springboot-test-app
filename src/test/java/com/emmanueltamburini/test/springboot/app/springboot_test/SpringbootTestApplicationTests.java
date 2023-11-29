@@ -11,18 +11,19 @@ import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.Ba
 import com.emmanueltamburini.test.springboot.app.springboot_test.services.AccountServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
 
 @SpringBootTest
 class SpringbootTestApplicationTests {
-	@Mock
+	@MockBean
 	private AccountRepository accountRepository;
-	@Mock
+	@MockBean
 	private BankRepository bankRepository;
-	@InjectMocks
+	@Autowired
 	private AccountServiceImpl accountService;
 
 	@Test
