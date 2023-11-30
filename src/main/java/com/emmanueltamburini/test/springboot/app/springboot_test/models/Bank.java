@@ -1,11 +1,17 @@
 package com.emmanueltamburini.test.springboot.app.springboot_test.models;
 
-import java.math.BigDecimal;
+import jakarta.persistence.*;
 import java.util.Objects;
 
+
+@Entity
+@Table(name="banks")
 public class Bank {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(name = "total_transfer")
     private int totalTransfer;
 
     public Bank() {

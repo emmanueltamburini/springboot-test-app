@@ -7,6 +7,7 @@ import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.Ba
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -18,32 +19,32 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public Account findById(Long id) {
-        return accountRepository.findById(id);
+        return accountRepository.findById(id).orElseThrow();
     }
 
     @Override
     public int checkTotalTransfer(Long bankId) {
-        final Bank bank = bankRepository.findById(bankId);
+        final Bank bank = bankRepository.findById(bankId).orElseThrow();
         return bank.getTotalTransfer();
     }
 
     @Override
     public BigDecimal checkAmount(Long accountId) {
-        final Account account = accountRepository.findById(accountId);
+        final Account account = accountRepository.findById(accountId).orElseThrow();
         return account.getAmount();
     }
 
     @Override
     public void transfer(Long origenAccountId, Long targetAccountId, BigDecimal amount, Long bankId) {
-        final Account origenAccount = accountRepository.findById(origenAccountId);
+        final Account origenAccount = accountRepository.findById(origenAccountId).orElseThrow();
         origenAccount.debit(amount);
         accountRepository.save(origenAccount);
 
-        final Account targetAccount = accountRepository.findById(targetAccountId);
+        final Account targetAccount = accountRepository.findById(targetAccountId).orElseThrow();
         targetAccount.credit(amount);
         accountRepository.save(targetAccount);
 
-        final Bank bank = bankRepository.findById(bankId);
+        final Bank bank = bankRepository.findById(bankId).orElseThrow();
         int totalTransfer = bank.getTotalTransfer();
         bank.setTotalTransfer(++totalTransfer);
         bankRepository.save(bank);

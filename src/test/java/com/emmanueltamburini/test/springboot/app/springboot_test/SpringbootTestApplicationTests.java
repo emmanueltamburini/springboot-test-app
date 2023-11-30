@@ -10,7 +10,6 @@ import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.Ac
 import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.BankRepository;
 import com.emmanueltamburini.test.springboot.app.springboot_test.services.AccountServiceImpl;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
