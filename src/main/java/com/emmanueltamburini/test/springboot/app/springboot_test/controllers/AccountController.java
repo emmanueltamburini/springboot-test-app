@@ -39,7 +39,7 @@ public class AccountController {
 
         response.put("date", LocalDate.now().toString());
         response.put("status", "OK");
-        response.put("Message", "Transfer was success");
+        response.put("message", "Transfer was success");
         response.put("transaction", transactionDto);
 
         doSomething(response);
