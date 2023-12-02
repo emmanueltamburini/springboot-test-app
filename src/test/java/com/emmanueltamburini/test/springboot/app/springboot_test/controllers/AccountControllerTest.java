@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,6 +54,12 @@ class AccountControllerTest {
         dto.setAmount(new BigDecimal("100"));
         dto.setBankId(1L);
 
+        final Map<String, Object> response = new HashMap<>();
+        response.put("date", LocalDate.now().toString());
+        response.put("status", "OK");
+        response.put("message", "Transfer was success");
+        response.put("transaction", dto);
+
         mvc.perform(post("/api/account/transfer")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -60,6 +68,7 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.date").value(LocalDate.now().toString()))
                 .andExpect(jsonPath("$.status").value("OK"))
                 .andExpect(jsonPath("$.message").value("Transfer was success"))
-                .andExpect(jsonPath("$.transaction.origenAccountId").value(dto.getOrigenAccountId()));
+                .andExpect(jsonPath("$.transaction.origenAccountId").value(dto.getOrigenAccountId()))
+                .andExpect(content().json(objectMapper.writeValueAsString(response)));
     }
 }
