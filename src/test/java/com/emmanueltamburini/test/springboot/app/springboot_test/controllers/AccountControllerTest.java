@@ -17,10 +17,10 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(AccountController.class)
 class AccountControllerTest {
@@ -70,5 +70,19 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.message").value("Transfer was success"))
                 .andExpect(jsonPath("$.transaction.origenAccountId").value(dto.getOrigenAccountId()))
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    void testList() throws Exception {
+        when(accountService.findAll()).thenReturn(Data.LIST_ACCOUNT());
+
+        mvc.perform(get("/api/account").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].person").value("PERSON TEST 1"))
+                .andExpect(jsonPath("$[1].person").value("PERSON TEST 2"))
+                .andExpect(jsonPath("$[0].amount").value("1000"))
+                .andExpect(jsonPath("$[1].amount").value("2000"))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(content().json(objectMapper.writeValueAsString(Data.LIST_ACCOUNT())));
     }
 }

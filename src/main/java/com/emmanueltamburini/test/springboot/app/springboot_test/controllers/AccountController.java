@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
@@ -19,10 +20,22 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+    @GetMapping
+    @ResponseStatus(OK)
+    public List<Account> listAccounts() {
+        return accountService.findAll();
+    }
+
     @GetMapping("/{id}")
     @ResponseStatus(OK)
     public Account details(@PathVariable Long id) {
         return accountService.findById(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(CREATED)
+    public Account save(@RequestBody Account account) {
+        return null;
     }
 
     @PostMapping("/transfer")
@@ -42,12 +55,6 @@ public class AccountController {
         response.put("message", "Transfer was success");
         response.put("transaction", transactionDto);
 
-        doSomething(response);
-
         return ResponseEntity.ok(response);
-    }
-
-    private void doSomething(Map<String, Object> response) {
-        response = new HashMap<>();
     }
 }
