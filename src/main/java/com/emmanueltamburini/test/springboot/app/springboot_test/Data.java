@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class Data {
     public static final Optional<Account> ACCOUNT_1 () {return Optional.of(new Account(1L, "PERSON TEST 1", new BigDecimal("1000")));}
-    public static final Optional<Account> ACCOUNT_2 () {return Optional.of(new Account(1L, "PERSON TEST 2", new BigDecimal("2000")));}
+    public static final Optional<Account> ACCOUNT_2 () {return Optional.of(new Account(2L, "PERSON TEST 2", new BigDecimal("2000")));}
     public static final Optional<Bank> BANK () {return Optional.of(new Bank(1L, "BANK TEST", 0));}
     public static final List<Account> LIST_ACCOUNT () {return Arrays.asList(ACCOUNT_1().orElseThrow(), ACCOUNT_2().orElseThrow());}
 }

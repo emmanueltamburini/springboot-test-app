@@ -1,6 +1,7 @@
 package com.emmanueltamburini.test.springboot.app.springboot_test.controllers;
 
 import com.emmanueltamburini.test.springboot.app.springboot_test.Data;
+import com.emmanueltamburini.test.springboot.app.springboot_test.models.Account;
 import com.emmanueltamburini.test.springboot.app.springboot_test.models.TransactionDto;
 import com.emmanueltamburini.test.springboot.app.springboot_test.services.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -84,5 +86,27 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$[1].amount").value("2000"))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(content().json(objectMapper.writeValueAsString(Data.LIST_ACCOUNT())));
+
+        verify(accountService).findAll();
+    }
+
+    @Test
+    void testSave() throws Exception {
+        final Account account = new Account(null, "PERSON TEST 3", new BigDecimal("3000"));
+        when(accountService.save(any(Account.class))).then(invocation -> {
+            Account c = invocation.getArgument(0);
+            c.setId(3L);
+            return  c;
+        });
+
+        mvc.perform(post("/api/account").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(account)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(3)))
+                .andExpect(jsonPath("$.person", is("PERSON TEST 3")))
+                .andExpect(jsonPath("$.amount", is(3000)));
+
+        verify(accountService).save(any(Account.class));
     }
 }
