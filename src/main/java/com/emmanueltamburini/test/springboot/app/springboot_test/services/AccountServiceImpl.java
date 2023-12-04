@@ -29,13 +29,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(readOnly = true)
     public List<Account> findAll() {
-        return null;
+        return accountRepository.findAll();
     }
 
     @Override
     @Transactional()
     public Account save(Account account) {
-        return null;
+        return accountRepository.save(account);
     }
 
     @Override
