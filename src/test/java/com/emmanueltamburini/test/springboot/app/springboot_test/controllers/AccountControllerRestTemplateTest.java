@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -108,6 +110,32 @@ class AccountControllerRestTemplateTest {
         assertEquals("PERSON TEST 1", account.getPerson());
         assertEquals("800.00", account.getAmount().toPlainString());
         assertEquals(new Account(1L, "PERSON TEST 1", new BigDecimal("800.00")), account);
+    }
+
+    @Test
+    @Order(4)
+    void testIntegrationGetAll() throws JsonProcessingException {
+        final ResponseEntity<Account[]> response = client.getForEntity(createUri("/api/account"), Account[].class);
+        final List<Account> accountList = Arrays.asList(response.getBody());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+
+        assertEquals(2, accountList.size());
+        assertEquals(1L, accountList.get(0).getId());
+        assertEquals("PERSON TEST 1", accountList.get(0).getPerson());
+        assertEquals("800.00", accountList.get(0).getAmount().toPlainString());
+        assertEquals(2L, accountList.get(1).getId());
+        assertEquals("PERSON TEST 2", accountList.get(1).getPerson());
+        assertEquals("2200.00", accountList.get(1).getAmount().toPlainString());
+
+        final JsonNode node = objectMapper.readTree(objectMapper.writeValueAsString(accountList));
+        assertEquals(1L, node.get(0).path("id").asLong());
+        assertEquals("PERSON TEST 1", node.get(0).path("person").asText());
+        assertEquals("800.0", node.get(0).path("amount").asText());
+        assertEquals(2L, node.get(1).path("id").asLong());
+        assertEquals("PERSON TEST 2", node.get(1).path("person").asText());
+        assertEquals("2200.0", node.get(1).path("amount").asText());
     }
 
     private String createUri(String uri) {
