@@ -138,6 +138,22 @@ class AccountControllerRestTemplateTest {
         assertEquals("2200.0", node.get(1).path("amount").asText());
     }
 
+    @Test
+    @Order(5)
+    void testIntegrationSave() {
+        final Account account = new Account(null, "PERSON TEST 3", new BigDecimal("3000"));
+        final ResponseEntity<Account> response = client.postForEntity(createUri("/api/account"), account, Account.class);
+        final Account responseAccount = response.getBody();
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+
+        assertNotNull(responseAccount);
+        assertEquals(3L, responseAccount.getId());
+        assertEquals("PERSON TEST 3", responseAccount.getPerson());
+        assertEquals("3000", responseAccount.getAmount().toPlainString());
+    }
+
     private String createUri(String uri) {
         return "http://localhost:" + port + uri;
     }
