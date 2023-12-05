@@ -184,4 +184,42 @@ class AccountControllerWebClientTest {
                     }
                 });
     }
+
+    @Test
+    @Order(7)
+    void testIntegrationSave() {
+        final Account account = new Account(null, "PERSON TEST 3", new BigDecimal("3000"));
+
+        client.post().uri("/api/account")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(account)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(3)
+                .jsonPath("$.person").isEqualTo("PERSON TEST 3")
+                .jsonPath("$.person").value(is("PERSON TEST 3"))
+                .jsonPath("$.amount").isEqualTo(3000);
+    }
+
+    @Test
+    @Order(8)
+    void testIntegrationSave2() {
+        final Account account = new Account(null, "PERSON TEST 4", new BigDecimal("3500"));
+
+        client.post().uri("/api/account")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(account)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Account.class)
+                .consumeWith(response -> {
+                    final Account accountResponse = response.getResponseBody();
+                    assertEquals(4L, accountResponse.getId());
+                    assertEquals("PERSON TEST 4", accountResponse.getPerson());
+                    assertEquals("3500", accountResponse.getAmount().toPlainString());
+                });
+    }
 }
