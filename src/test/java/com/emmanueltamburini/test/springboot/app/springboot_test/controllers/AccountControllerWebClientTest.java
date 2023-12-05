@@ -1,11 +1,11 @@
 package com.emmanueltamburini.test.springboot.app.springboot_test.controllers;
 
+import com.emmanueltamburini.test.springboot.app.springboot_test.models.Account;
 import com.emmanueltamburini.test.springboot.app.springboot_test.models.TransactionDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class AccountControllerWebClientTest {
 
@@ -35,6 +36,35 @@ class AccountControllerWebClientTest {
     }
 
     @Test
+    @Order(1)
+    void testIntegrationDetails() throws JsonProcessingException {
+        final Account account = new Account(1L, "PERSON TEST 1", new BigDecimal("1000"));
+
+        client.get().uri("/api/account/1").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.person").isEqualTo("PERSON TEST 1")
+                .jsonPath("$.amount").isEqualTo(1000)
+                .json(objectMapper.writeValueAsString(account));
+    }
+
+    @Test
+    @Order(2)
+    void testIntegrationDetails2() {
+        client.get().uri("/api/account/2").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Account.class)
+                .consumeWith(response -> {
+                    final Account account = response.getResponseBody();
+                    assertEquals("PERSON TEST 2", account.getPerson());
+                    assertEquals("2000.00", account.getAmount().toPlainString());
+                });
+    }
+
+    @Test
+    @Order(3)
     void testIntegrationTransfer() throws JsonProcessingException {
         final TransactionDto dto = new TransactionDto();
         dto.setOrigenAccountId(1L);
@@ -54,6 +84,7 @@ class AccountControllerWebClientTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectStatus().isOk()
                 .expectBody()
                 .consumeWith(entityExchangeResult -> {
@@ -77,6 +108,7 @@ class AccountControllerWebClientTest {
     }
 
     @Test
+    @Order(4)
     void testIntegrationTransferOtherWay() throws JsonProcessingException {
         final TransactionDto dto = new TransactionDto();
         dto.setOrigenAccountId(1L);
@@ -96,6 +128,7 @@ class AccountControllerWebClientTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectStatus().isOk()
                 .expectBody(String.class)
                 .consumeWith(entityExchangeResult -> {
