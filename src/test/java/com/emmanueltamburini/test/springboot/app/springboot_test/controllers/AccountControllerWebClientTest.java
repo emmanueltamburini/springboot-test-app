@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -65,6 +66,45 @@ class AccountControllerWebClientTest {
 
     @Test
     @Order(3)
+    void testIntegrationGetAll() {
+        client.get().uri("/api/account").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$").isArray()
+                .jsonPath("$").value(hasSize(2))
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].person").isEqualTo("PERSON TEST 1")
+                .jsonPath("$[0].amount").isEqualTo(1000)
+                .jsonPath("$[1].id").isEqualTo(2)
+                .jsonPath("$[1].person").isEqualTo("PERSON TEST 2")
+                .jsonPath("$[1].amount").isEqualTo(2000);
+    }
+
+    @Test
+    @Order(4)
+    void testIntegrationGetAll2() {
+        client.get().uri("/api/account").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(Account.class)
+                .consumeWith(response -> {
+                    final List<Account> accountList = response.getResponseBody();
+                    assertNotNull(accountList);
+                    assertEquals(2, accountList.size());
+                    assertEquals(1L, accountList.get(0).getId());
+                    assertEquals("PERSON TEST 1", accountList.get(0).getPerson());
+                    assertEquals("1000.00", accountList.get(0).getAmount().toPlainString());                    assertEquals(2, accountList.size());
+                    assertEquals(2L, accountList.get(1).getId());
+                    assertEquals("PERSON TEST 2", accountList.get(1).getPerson());
+                    assertEquals("2000.00", accountList.get(1).getAmount().toPlainString());
+                })
+                .hasSize(2)
+                .value(hasSize(2));
+    }
+
+    @Test
+    @Order(5)
     void testIntegrationTransfer() throws JsonProcessingException {
         final TransactionDto dto = new TransactionDto();
         dto.setOrigenAccountId(1L);
@@ -108,7 +148,7 @@ class AccountControllerWebClientTest {
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     void testIntegrationTransferOtherWay() throws JsonProcessingException {
         final TransactionDto dto = new TransactionDto();
         dto.setOrigenAccountId(1L);
