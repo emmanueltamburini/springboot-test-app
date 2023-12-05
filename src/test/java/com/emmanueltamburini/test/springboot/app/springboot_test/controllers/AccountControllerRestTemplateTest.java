@@ -1,6 +1,8 @@
 package com.emmanueltamburini.test.springboot.app.springboot_test.controllers;
 
 import com.emmanueltamburini.test.springboot.app.springboot_test.models.TransactionDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ class AccountControllerRestTemplateTest {
 
     private ObjectMapper objectMapper;
 
-    @LocalServerPort
+    @LocalServerPort //It works for AccountControllerWebClientTest too, to know the port
     private int port;
 
     @BeforeEach
@@ -57,7 +59,7 @@ class AccountControllerRestTemplateTest {
 
     @Test
     @Order(2)
-    void testIntegrationWithPortTransfer() {
+    void testIntegrationWithPortTransfer() throws JsonProcessingException {
         final TransactionDto dto = new TransactionDto();
         dto.setOrigenAccountId(1L);
         dto.setTargetAccountId(2L);
@@ -75,6 +77,21 @@ class AccountControllerRestTemplateTest {
         assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
         assertNotNull(json);
         assertTrue(json.contains("Transfer was success"));
+
+        final JsonNode jsonNode = objectMapper.readTree(json);
+        assertEquals("Transfer was success", jsonNode.path("message").asText());
+        assertEquals(LocalDate.now().toString(), jsonNode.path("date").asText());
+        assertEquals("100", jsonNode.path("transaction").path("amount").asText());
+        assertEquals(1L, jsonNode.path("transaction").path("origenAccountId").asLong());
+
+        final Map<String, Object> responseBody = new HashMap<>();
+
+        responseBody.put("date", LocalDate.now().toString());
+        responseBody.put("status", "OK");
+        responseBody.put("message", "Transfer was success");
+        responseBody.put("transaction", dto);
+
+        assertEquals(objectMapper.writeValueAsString(responseBody), json);
     }
 
     private String createUri(String uri) {
