@@ -33,9 +33,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Account save(Account account) {
         return accountRepository.save(account);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        accountRepository.deleteById(id);
     }
 
     @Override
@@ -53,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void transfer(Long origenAccountId, Long targetAccountId, BigDecimal amount, Long bankId) throws NoSuchElementException {
         final Account origenAccount = accountRepository.findById(origenAccountId).orElseThrow();
         origenAccount.debit(amount);

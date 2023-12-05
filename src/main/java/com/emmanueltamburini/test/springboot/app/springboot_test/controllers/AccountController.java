@@ -38,6 +38,10 @@ public class AccountController {
         return accountService.save(account);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(NO_CONTENT)
+    public void delete(@PathVariable Long id) { accountService.deleteById(id); }
+
     @PostMapping("/transfer")
     @ResponseStatus(OK)
     public ResponseEntity<Map<String, Object>> transfer(@RequestBody TransactionDto transactionDto) {
