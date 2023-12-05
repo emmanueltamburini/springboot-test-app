@@ -1,5 +1,6 @@
 package com.emmanueltamburini.test.springboot.app.springboot_test.controllers;
 
+import com.emmanueltamburini.test.springboot.app.springboot_test.models.Account;
 import com.emmanueltamburini.test.springboot.app.springboot_test.models.TransactionDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -92,6 +93,21 @@ class AccountControllerRestTemplateTest {
         responseBody.put("transaction", dto);
 
         assertEquals(objectMapper.writeValueAsString(responseBody), json);
+    }
+
+    @Test
+    @Order(3)
+    void testIntegrationDetail() {
+        final ResponseEntity<Account> response = client.getForEntity(createUri("/api/account/1"), Account.class);
+        final Account account = response.getBody();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+
+        assertEquals(1L, account.getId());
+        assertEquals("PERSON TEST 1", account.getPerson());
+        assertEquals("800.00", account.getAmount().toPlainString());
+        assertEquals(new Account(1L, "PERSON TEST 1", new BigDecimal("800.00")), account);
     }
 
     private String createUri(String uri) {
