@@ -244,6 +244,7 @@ class AccountControllerWebClientTest {
                 .hasSize(3);
 
         client.get().uri("/api/account/4").exchange()
-                .expectStatus().is5xxServerError();
+                .expectStatus().isNotFound()
+                .expectBody().isEmpty();
     }
 }
