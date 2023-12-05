@@ -21,6 +21,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("Integration_rest_template")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AccountControllerRestTemplateTest {

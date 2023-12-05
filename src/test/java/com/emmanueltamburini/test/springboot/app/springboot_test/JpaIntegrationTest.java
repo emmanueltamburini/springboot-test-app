@@ -2,6 +2,7 @@ package com.emmanueltamburini.test.springboot.app.springboot_test;
 
 import com.emmanueltamburini.test.springboot.app.springboot_test.models.Account;
 import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.AccountRepository;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@Tag("jpa_test")
 @DataJpaTest
 public class JpaIntegrationTest {
     @Autowired

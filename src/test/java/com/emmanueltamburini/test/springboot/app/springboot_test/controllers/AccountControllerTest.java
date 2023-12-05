@@ -6,6 +6,7 @@ import com.emmanueltamburini.test.springboot.app.springboot_test.models.Transact
 import com.emmanueltamburini.test.springboot.app.springboot_test.services.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Tag("controller_test")
 @WebMvcTest(AccountController.class)
 class AccountControllerTest {
     @Autowired

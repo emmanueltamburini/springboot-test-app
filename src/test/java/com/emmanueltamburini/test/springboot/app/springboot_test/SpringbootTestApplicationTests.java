@@ -9,6 +9,7 @@ import com.emmanueltamburini.test.springboot.app.springboot_test.models.Bank;
 import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.AccountRepository;
 import com.emmanueltamburini.test.springboot.app.springboot_test.repositories.BankRepository;
 import com.emmanueltamburini.test.springboot.app.springboot_test.services.AccountServiceImpl;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Tag("general_test")
 @SpringBootTest
 class SpringbootTestApplicationTests {
 	@MockBean
