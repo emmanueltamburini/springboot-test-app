@@ -10,16 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -106,6 +104,7 @@ class AccountControllerRestTemplateTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
 
+        assertNotNull(account);
         assertEquals(1L, account.getId());
         assertEquals("PERSON TEST 1", account.getPerson());
         assertEquals("800.00", account.getAmount().toPlainString());
@@ -116,7 +115,7 @@ class AccountControllerRestTemplateTest {
     @Order(4)
     void testIntegrationGetAll() throws JsonProcessingException {
         final ResponseEntity<Account[]> response = client.getForEntity(createUri("/api/account"), Account[].class);
-        final List<Account> accountList = Arrays.asList(response.getBody());
+        final List<Account> accountList = Arrays.asList(Objects.requireNonNull(response.getBody()));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
@@ -152,6 +151,54 @@ class AccountControllerRestTemplateTest {
         assertEquals(3L, responseAccount.getId());
         assertEquals("PERSON TEST 3", responseAccount.getPerson());
         assertEquals("3000", responseAccount.getAmount().toPlainString());
+    }
+
+    @Test
+    @Order(6)
+    void testIntegrationDelete() {
+        ResponseEntity<Account[]> response = client.getForEntity(createUri("/api/account"), Account[].class);
+        List<Account> accountList = Arrays.asList(Objects.requireNonNull(response.getBody()));
+
+        assertEquals(3, accountList.size());
+
+        client.delete(createUri("/api/account/3"));
+
+        response = client.getForEntity(createUri("/api/account"), Account[].class);
+        accountList = Arrays.asList(Objects.requireNonNull(response.getBody()));
+
+        assertEquals(2, accountList.size());
+
+        final ResponseEntity<Account> detailsResponse = client.getForEntity(createUri("/api/account/3"), Account.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, detailsResponse.getStatusCode());
+        assertFalse(detailsResponse.hasBody());
+    }
+
+    @Test
+    @Order(7)
+    void testIntegrationDeleteOtherWay() {
+        ResponseEntity<Account[]> response = client.getForEntity(createUri("/api/account"), Account[].class);
+        List<Account> accountList = Arrays.asList(Objects.requireNonNull(response.getBody()));
+
+        assertEquals(2, accountList.size());
+
+        final Map<String, Long> pathVariables = new HashMap<>();
+        pathVariables.put("id", 2L);
+
+        final ResponseEntity<Void> exchange = client.exchange(createUri("/api/account/{id}"), HttpMethod.DELETE, null, Void.class, pathVariables);
+
+        assertEquals(HttpStatus.NO_CONTENT, exchange.getStatusCode());
+        assertFalse(exchange.hasBody());
+
+        response = client.getForEntity(createUri("/api/account"), Account[].class);
+        accountList = Arrays.asList(Objects.requireNonNull(response.getBody()));
+
+        assertEquals(1, accountList.size());
+
+        final ResponseEntity<Account> detailsResponse = client.getForEntity(createUri("/api/account/2"), Account.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, detailsResponse.getStatusCode());
+        assertFalse(detailsResponse.hasBody());
     }
 
     private String createUri(String uri) {
